@@ -1,5 +1,5 @@
 """
-only use this if camerea cannot be parented to the player
+use this if camerea cannot be parented to the player
 this makes the camera follow the player 
 node setup
 • Level 1
