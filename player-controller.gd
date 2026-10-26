@@ -120,6 +120,8 @@ func movement_update(delta):
 	
 	if Input.is_action_just_pressed("jump") and can_jump:
 		jump_count = jump_count + 1
+		if jump_count > 0:
+			velocity.y = 0
 		velocity.y -= jump_force
 		is_jumping = true
 		$AnimatedSprite2D.frame = 0
