@@ -13,5 +13,5 @@ func trigger_change() -> void:
 	object.position = position
 
 # change the spawn position
-func update_position(new_position) -> void:
+func update_position(new_position: Vector2) -> void:
 	position = new_position

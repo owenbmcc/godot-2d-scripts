@@ -34,6 +34,7 @@ node setup
 """
 
 extends CharacterBody2D
+class_name Obstacle
 
 # editor settings
 @export var is_moving : bool = true
@@ -48,6 +49,13 @@ var horizontal_move : bool = true
 var temp_speed : int = speed
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
+signal on_attack
+signal on_hit
+signal on_death
+
+# get the areas to mirror them
+var areas: Array[Area2D] = []
+
 func _ready() -> void:
 	$AnimatedSprite2D.flip_h = direction == 1 # match animation to direction
 	
@@ -57,6 +65,11 @@ func _ready() -> void:
 	# stop movement if waiting for player detect
 	if activate_on_player_detect:
 		horizontal_move = false
+	
+	for child in get_children():
+		if child is Area2D:
+			areas.append(child)
+		
 
 func _physics_process(_delta) -> void:
 	if is_moving and is_alive:
@@ -68,8 +81,9 @@ func movement_update() -> void:
 			direction = direction * -1 # switch direction
 			$AnimatedSprite2D.flip_h = direction == 1 # match animation to direction
 			$RayCast2D.position.x = direction * $CollisionShape2D.shape.radius
-			$hit_box.position.x = $hit_box.position.x * -1
-			$hit_box.position.x = $hit_box.position.x * -1
+			for area in areas:
+				area.position.x = area.position.x * -1
+				area.position.x = area.position.x * -1
 	
 	if not is_on_floor():
 		velocity.y += gravity
@@ -86,33 +100,40 @@ func movement_update() -> void:
 func hit() -> void:
 	is_alive = false
 	$AnimatedSprite2D.play("death")
+	emit_signal("on_hit")
 	emit_signal("on_death")
 
 # if player jump on head or another part, hits with projectile
 # connect body_entered signal from HitBox
-func _on_hit_box_body_entered(_body) -> void:
+func on_hit_body_entered(body) -> void:
+	if body is not Player:
+		return
 	if is_alive:
 		hit()
 
 # area that harms/kills player
 # connect body_entered signal from Attack
-func _on_attack_body_entered(_body) -> void:
+func on_attack_body_entered(body) -> void:
+	if body is not Player:
+		return
 	if is_alive and $Timer.is_stopped():
-		$AnimatedSprite2D.play("Attack")
+		$AnimatedSprite2D.play("attack")
 		is_moving = false # stop moving to attack player
 		$Timer.start()
-		emit_signal("on_hit")
+		emit_signal("on_attack")
 
 # area that detect player is nearby
 # connect body_entered signal from Detect
-func _on_detect_body_entered(_body) -> void:
+func on_detect_body_entered(body) -> void:
+	if body is not Player:
+		return
 	if is_alive:
 		if activate_on_player_detect:
 			horizontal_move = true
 
 # connect animation_finished signal from AnimatedSprite2D
 func on_animation_finished():
-	
+
 	# if dead, remove object
 	if not is_alive:
 		queue_free()

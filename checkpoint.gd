@@ -17,7 +17,7 @@ extends Area2D
 
 # boolean to prevent setting more than once
 var is_activated : bool = false
-signal on_activated
+signal on_activated(position: Vector2)
 var has_anim : bool = false
 
 func _ready() -> void:
@@ -27,7 +27,6 @@ func _ready() -> void:
 		$AnimatedSprite2D.sprite_frames.set_animation_loop("activated", false)
 
 func on_body_entered(_body):
-	print(_body)
 	if is_activated:
 		return
 	is_activated = true

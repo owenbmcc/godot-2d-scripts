@@ -21,7 +21,7 @@ extends Area2D
 @export var collectible_name : String = "coin"
 
 ## send to item-manager, hud, etc
-signal on_collected
+signal on_collected(collectible_name: String)
 
 # prevent collection after first collision
 var is_collected : bool = false

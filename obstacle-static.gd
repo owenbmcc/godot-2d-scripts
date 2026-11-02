@@ -22,7 +22,9 @@ func _ready() -> void:
 	assert(has_node("Timer"), "add a Timer node for hit timeout")
 	$Timer.one_shot = true
 
-func on_body_entered(_body) -> void:
+func on_body_entered(body) -> void:
+	if body is not Player:
+		return
 	if $Timer.is_stopped():
 		emit_signal("on_collision")
 		$Timer.start()

@@ -173,7 +173,7 @@ func death():
 	# $DeathSound.play()
 
 func talk():
-	$AnimateSprite2D.play("talk")
+	$AnimatedSprite2D.play("talk")
 	is_moving = false
 	
 func on_projectile():
