@@ -1,4 +1,4 @@
-# MMP 270 Default Scripts
+# MMP 270 godot 2d scripts
 
 This is a collection of scripts for a Godot 2D platform/RPG game for use in MMP 270.
 
