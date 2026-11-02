@@ -1,43 +1,50 @@
 """
 any item that can be collected
-ItemName should match property in Global.gd to track
+collectible_name will be tracked in global.gd (if it exists)
 
 node setup
-• Area2D #Collectible.gd (ItemName ie Apple, Coin) (Layer: Collectible, Mask: Player)
+• Area2D # collectible.gd (collectible_name ie coin, special_key) 
+	[Layer: collectible, Mask: player]
+	-> body_entered -> _on_body_entered
+	-> on_collected -> item_manager _on_collectible_collected
+
 	• AnimatedSprite2D
+		animations: idle/default (autoplay=true), collected (loop=false)
+		-> animation_finished() -> _on_animation_finished
 	• CollisionShape2D
-	~ AudioStreamPlayer (CollectedSound)
-
-signals
-Area2D body_entered -> _on_body_entered
-AnimatedSprite2D animation_finished() -> _on_animation_finished
-on_collected -> ItemsManager _on_collectible_collected
-
-AnimatedSprite2D animations Idle/default (autoplay=true), Collected (loop=false)
+	~ AudioStreamPlayer # play_sfx.gd
 """
 
 extends Area2D
 
-# item needs a name, can be tracked globally
-@export var collectible_type : String
+## item needs a name, can be tracked globally
+@export var collectible_name : String = "coin"
 
-var is_collected : bool = false
-
-# connect scenemanager for metrics ui 
-# connect to item manager to track item state
+## send to item-manager, hud, etc
 signal on_collected
+
+# prevent collection after first collision
+var is_collected : bool = false
+var has_anim : bool = false
+
+func _ready() -> void:
+	if has_node("AnimatedSprite2D"):
+		assert($AnimatedSprite2D.sprite_frames.has_animation("collected"), "AnimatedSprite2D requires collected animation")
+		has_anim = true
+		$AnimatedSprite2D.sprite_frames.set_animation_loop("collected", false)
 
 # when player enters trigger animation
 # connect signal from Area2D, body entered
-func _on_body_entered(_body):
-	if not is_collected:
-		is_collected = true
-		$AnimatedSprite2D.play("Collected")
+func _on_body_entered(_body) -> void:
+	if is_collected:
+		return
+	is_collected = true
+	emit_signal("on_collected", collectible_name)
+	if has_anim:
+		$AnimatedSprite2D.play("collected")
 		$AnimatedSprite2D.frame = 0 # start at beginning
-		emit_signal("on_collected", collectible_type)
-		
-		# remove for sfx
-		# $CollectedSound.play()
+	else:
+		queue_free()
 
 # when animation finishes, remove collectible
 # connect signal from AnimatedSprite animation finished

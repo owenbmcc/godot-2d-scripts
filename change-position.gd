@@ -3,18 +3,15 @@ change the position of an object
 use for player respawn, checkpoints, teleporting objects etc.
 connect event signal -> on_change
 """
-extends Node
+extends Marker2D
 
-# object to change position
+## object to change position
 @export var object : Node
 
-# marker for position to set 
-@export var marker : Marker2D
-
 # event to connect signal
-func on_change():
-	object.position = marker.position
+func trigger_change() -> void:
+	object.position = position
 
 # change the spawn position
-func update_position(position):
-	marker.position = position
+func update_position(new_position) -> void:
+	position = new_position

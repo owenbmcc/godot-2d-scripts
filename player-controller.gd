@@ -2,25 +2,21 @@
 simple 2d player controller
 set up with player art facing right
 
-• CharacterBody2D #PlayerController.gd (Player)
+• CharacterBody2D (player) #player-contoller.gd 
+	-> player_fall -> respawn, scene-manager
+	-> player_hit -> die, respawn
 	• AnimatedSprite2D
+		animations: idle, walk, jump, projectile, hit, death, talk 
+		-> animation_finished -> on_animation_finished
 	• CollisionShape2D
 	~ ProjectileEmitter
-	~ AudioStreamPlayer2D (JumpSound)
-	~ AudioStreamPlayer2D (LandSound)
-	~ AudioStreamPlayer2D (DeathSound)
+		-> on_projectile_emitted -> on_projectile
+	~ AudioStreamPlayer2D (jump_sound) #play_sfx.gd
+	~ AudioStreamPlayer2D (land_sound) #play_sfx.gd
+	~ AudioStreamPlayer2D (death_sound) #play_sfx.gd
 
-PlayerController uses the following inputs:
-	move_up, move_down, move_right, move_left, jump, projectile
-These are defined in Project > Project Settings > Input Map
-
-AnimatedSprite2D animations: idle, walk, jump, projectile, hit, death, talk 
-
-signals
-player_fall -> SceneManager _on_player_fall
-player_hit -> SceneManager _on_player_hit
-AnimatedSprite2D animation_finished -> _on_animation_finished
-ProjectileEmitter on_projective -> _on_projectile
+Input defined in Project > Project Settings > Input Map
+move_up, move_down, move_right, move_left, jump, projectile
 
 """
 
@@ -51,6 +47,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 signal player_hit # signal if player is hit by obstacle
 signal player_fall # player goes beneath game window
+signal player_died
 
 func _ready():
 	if not is_on_floor():
@@ -133,6 +130,9 @@ func movement_update(delta):
 		emit_signal("player_fall") # to scene manager
 	
 func update_animation():
+	if not is_alive:
+		return
+	
 	if not is_on_floor() and is_moving and use_gravity:
 		$AnimatedSprite2D.play("jump")
 	elif velocity.length_squared() > 1 and is_moving:
@@ -156,14 +156,17 @@ func enemy_collision():
 	emit_signal("player_hit")
 
 # after hit animation, test if player is still alive
-func _on_animation_finished():
+func on_animation_finished():
 	# reset animation
 	var a = $AnimatedSprite2D.animation
 	if  a == "projectile" or a == "hit":
 		is_moving = true
+	
+	if a == "death":
+		emit_signal("player_died")
 
 # called by scene manager if player out of lives
-func die():
+func death():
 	is_alive = false
 	$AnimatedSprite2D.play("death")
 	# remove comment to play sfx
@@ -173,7 +176,7 @@ func talk():
 	$AnimateSprite2D.play("talk")
 	is_moving = false
 	
-func _on_projectile():
+func on_projectile():
 	$AnimatedSprite2D.play("projectile")
 	if is_on_floor():
 		is_moving = false

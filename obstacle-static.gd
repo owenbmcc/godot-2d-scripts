@@ -1,12 +1,12 @@
 """
-# obstacle that hurts player when colliding
-# option to remove
+obstacle that hurts/kills player when colliding
 
-• Area2D #ObstacleStatic.gd (ObstacleName) (Layer: Enemy, Mask: Player)
+• Area2D #obstacle-static.gd
+	[Layer: obstacle, Mask: player]
 	• Sprite2D/AnimatedSprite2D
 	• CollisionShape2D
-	• Timer (HitTimeout) (oneshot=true)
-	~ AudioStreamPlayer2D (HitSound)
+	• Timer (oneshot=true)
+	~ AudioStreamPlayer2D
 	~ StaticBody2D (if player should not pass through the obstacle)
 		• CollisionShape2D
 
@@ -14,16 +14,17 @@
 
 extends Area2D
 
-# remove sprite after collision
+## remove sprite after collision
 @export var remove_on_collision : bool = false
+signal on_collision
 
-func _body_entered(body):
-	
-	if $HitTimeout.is_stopped():
-		body.enemy_collision() # call enemy collision func in player
+func _ready() -> void:
+	assert(has_node("Timer"), "add a Timer node for hit timeout")
+	$Timer.one_shot = true
+
+func on_body_entered(_body) -> void:
+	if $Timer.is_stopped():
+		emit_signal("on_collision")
+		$Timer.start()
 		if remove_on_collision:
 			queue_free()
-		$HitTimeout.start()
-	
-		# remove comment to play sfx
-		# $HitSound.play()
