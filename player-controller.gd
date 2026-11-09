@@ -95,9 +95,10 @@ func movement_update(delta):
 	# move player
 	move_and_slide()
 	
+	
 	if not use_gravity:
 		return
-		
+
 	# apply gravity to player
 	if not is_on_floor():
 		velocity.y += gravity * delta
@@ -111,7 +112,7 @@ func movement_update(delta):
 	
 	# jump input
 	var can_jump = is_on_floor() or (use_wall_jump and is_on_wall())
-	if double_jump and jump_count < 2:
+	if double_jump and jump_count < 2 and is_jumping:
 		if not can_jump:
 			can_jump = true
 	
