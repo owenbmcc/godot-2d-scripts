@@ -11,9 +11,9 @@ set up with player art facing right
 	• CollisionShape2D
 	~ ProjectileEmitter
 		-> on_projectile_emitted -> on_projectile
-	~ AudioStreamPlayer2D (jump_sound) #play_sfx.gd
-	~ AudioStreamPlayer2D (land_sound) #play_sfx.gd
-	~ AudioStreamPlayer2D (death_sound) #play_sfx.gd
+	~ AudioStreamPlayer2D (JumpSound)
+	~ AudioStreamPlayer2D (LandSound)
+	~ AudioStreamPlayer2D (DeathSound)
 
 Input defined in Project > Project Settings > Input Map
 move_up, move_down, move_right, move_left, jump, projectile

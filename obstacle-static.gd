@@ -6,7 +6,7 @@ obstacle that hurts/kills player when colliding
 	• Sprite2D/AnimatedSprite2D
 	• CollisionShape2D
 	• Timer (oneshot=true)
-	~ AudioStreamPlayer2D
+	~ AudioStreamPlayer2D #plays-sfx.gd
 	~ StaticBody2D (if player should not pass through the obstacle)
 		• CollisionShape2D
 

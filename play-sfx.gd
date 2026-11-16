@@ -7,5 +7,5 @@ func _ready() -> void:
 	# throws error if audio stream player is missing a file
 	assert(stream, "missing stream (audio file), remove or add stream")
 
-func play_sound(_name) -> void:
+func play_sound(_name="default") -> void:
 	play()

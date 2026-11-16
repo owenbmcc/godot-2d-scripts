@@ -29,8 +29,8 @@ node setup
 		• CollisionShape2D
 		-> body_entered -> _on_detect_body_entered
 	• Timer - oneshot=true
-	~ AudioStreamPlayer2D death_sound
-	~ AudioStreamPlayer2D hit_sound
+	~ AudioStreamPlayer2D (death sound) #play-sfx.gd
+	~ AudioStreamPlayer2D (hit sound) #play-sfx.gd
 """
 
 extends CharacterBody2D
