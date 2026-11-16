@@ -6,5 +6,5 @@ extends Node
 ## scene/level to load
 @export_file var load_level_path
 
-func on_load() -> void:
+func on_load(_name = "default") -> void:
 	get_tree().change_scene_to_file(load_level_path)
